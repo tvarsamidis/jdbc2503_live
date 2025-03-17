@@ -5,6 +5,8 @@ import org.h2.tools.Server;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.time.LocalDate;
 import java.util.Properties;
 
@@ -15,10 +17,25 @@ public class DbTestMyCrudOperations {
 
     public static void main(String[] args) throws Exception {
         loadProperties();
-        // startH2Server();
+        startH2Server();
         loadDatabaseDriver();
-        Thread.sleep(60_000);
-        // stopH2Server();
+        Connection connection = getConnection();
+
+        for (int time = 60; time >= 0; time--) {
+            System.out.println("Stopping in " + time + " seconds");
+            Thread.sleep(1000);
+        }
+        stopH2Server();
+    }
+
+    private static Connection getConnection() throws Exception {
+        String databaseUrl = "jdbc:h2:./data/demo02;CASE_INSENSITIVE_IDENTIFIERS=TRUE";
+        if (Math.random() >= 1) { // 1 = never, 0 = always
+            databaseUrl = "jdbc:h2:mem:demo02;CASE_INSENSITIVE_IDENTIFIERS=TRUE";
+        }
+        Connection c = DriverManager.getConnection(databaseUrl, "sa", "");
+        System.out.println("Established connection with database");
+        return c;
     }
 
     private static void loadDatabaseDriver() throws Exception {
