@@ -6,6 +6,14 @@ import java.time.LocalDate;
 
 public class DbTestMyCrudOperations {
     // H2
-    private Server server;
+    private static Server server;
+
+    public static void main(String[] args) {
+        loadProperties();
+    }
+
+    private static void loadProperties() {
+    }
+
 
 }
