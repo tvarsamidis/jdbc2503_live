@@ -1,5 +1,6 @@
 package gr.codehub.jdbc.demo02;
 
+import org.h2.Driver;
 import org.h2.tools.Server;
 
 import java.io.FileInputStream;
@@ -14,8 +15,16 @@ public class DbTestMyCrudOperations {
 
     public static void main(String[] args) throws Exception {
         loadProperties();
-        startH2Server();
-        stopH2Server();
+        // startH2Server();
+        loadDatabaseDriver();
+        Thread.sleep(60_000);
+        // stopH2Server();
+    }
+
+    private static void loadDatabaseDriver() throws Exception {
+        Class.forName("org.h2.Driver"); // standard Java
+        // Driver.load(); // provided by H2
+        System.out.println("H2 JDBC driver loaded");
     }
 
     private static void stopH2Server() {
