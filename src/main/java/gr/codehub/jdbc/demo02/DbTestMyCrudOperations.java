@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.Properties;
 
@@ -20,6 +21,8 @@ public class DbTestMyCrudOperations {
         startH2Server();
         loadDatabaseDriver();
         Connection connection = getConnection();
+        createTable(connection);
+
 
         for (int time = 60; time >= 0; time--) {
             System.out.println("Stopping in " + time + " seconds");
@@ -28,11 +31,16 @@ public class DbTestMyCrudOperations {
         stopH2Server();
     }
 
+    private static void createTable(Connection connection) throws Exception {
+        String sql = sqlCommands.getProperty("create.table");
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(sql);
+        System.out.println("Created table in database");
+    }
+
+    // jdbc:h2:file:C:/Users/Thomas/IdeaProjects/jdbc_demos/jdbc2503_live/jdbc2503_live/data/demo02
     private static Connection getConnection() throws Exception {
-        String databaseUrl = "jdbc:h2:./data/demo02;CASE_INSENSITIVE_IDENTIFIERS=TRUE";
-        if (Math.random() >= 1) { // 1 = never, 0 = always
-            databaseUrl = "jdbc:h2:mem:demo02;CASE_INSENSITIVE_IDENTIFIERS=TRUE";
-        }
+        String databaseUrl = sqlCommands.getProperty("database.url.file");
         Connection c = DriverManager.getConnection(databaseUrl, "sa", "");
         System.out.println("Established connection with database");
         return c;
