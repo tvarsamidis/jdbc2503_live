@@ -1,14 +1,13 @@
 package gr.codehub.jdbc.demo02;
 
-import org.h2.Driver;
 import org.h2.tools.Server;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.Properties;
 
 public class DbTestMyCrudOperations {
@@ -22,13 +21,40 @@ public class DbTestMyCrudOperations {
         loadDatabaseDriver();
         Connection connection = getConnection();
         createTable(connection);
+        insertData(connection);
+        readData(connection);
 
 
-        for (int time = 60; time >= 0; time--) {
+        for (int time = 120; time >= 0; time--) {
             System.out.println("Stopping in " + time + " seconds");
             Thread.sleep(1000);
         }
         stopH2Server();
+    }
+
+    private static void readData(Connection connection) throws Exception {
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sqlCommands.getProperty("select.table.001"));
+        int rowCount = 0;
+        while (resultSet.next()) {
+            rowCount++;
+            System.out.println("----- row: " + rowCount);
+            System.out.println("Column 1 name is: " + resultSet.getMetaData().getColumnName(1));
+            System.out.println("Column 1 data as integer is: " + resultSet.getInt(1));
+            System.out.println("Column 2 data as String is: " + resultSet.getString(2));
+            System.out.println("Column 'last' data as String is: " + resultSet.getString("last"));
+        }
+    }
+
+    private static void insertData(Connection connection) throws Exception {
+        Statement statement = connection.createStatement();
+        int total = 0;
+        for (int count = 1; count <= 10; count++) {
+            String s = "insert.table.0" + String.format("%02d", count);
+            System.out.println("Running " + s);
+            total += statement.executeUpdate(sqlCommands.getProperty(s));
+        }
+        System.out.println(total + " updates executed");
     }
 
     private static void createTable(Connection connection) throws Exception {
